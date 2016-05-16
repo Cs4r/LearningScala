@@ -10,5 +10,4 @@ object Problem2 {
     case _ :: tail => penultimate(tail)
     case _ => throw new NoSuchElementException
   }
-
 }
