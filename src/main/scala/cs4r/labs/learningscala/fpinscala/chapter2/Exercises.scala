@@ -16,6 +16,26 @@ object Exercises extends App {
   println(isSorted(ints.reverse, (a: Int, b: Int) => a >= b))
 
 
+  def curry[A, B, C](f: (A, B) => C): A => (B => C) = {
+
+    val g: A => B => C = (a: A) => (b: B) => f(a, b)
+
+    g
+  }
+
+  def uncurry[A, B, C](f: A => B => C): (A, B) => C = {
+    val g: (A, B) => C = (a: A, b: B) => f(a)(b)
+
+    g
+  }
+
+
+  def compose[A, B, C](f: B => C, g: A => B): A => C = {
+    val h: A => C = (a: A) => f(g(a))
+    h
+  }
+
+
   def fib(n: Int): Int = {
 
     def fibTailRecursive(n: Int, prev: Int, next: Int): Int = n match {
@@ -32,7 +52,7 @@ object Exercises extends App {
     def loop(n: Int): Boolean = {
       if (n == as.length)
         true
-      else if (ordered(as(n-1), as(n)))
+      else if (ordered(as(n - 1), as(n)))
         loop(n + 1)
       else false
     }
