@@ -43,7 +43,7 @@ object Exercices extends App {
       else Cons(as.head, apply(as.tail: _*))
 
     def tail[A](l: List[A]): List[A] = l match {
-      case Nil => throw NoSuchElementException
+      case Nil => throw new NoSuchElementException
       case Cons(_, t) => t
     }
 
@@ -52,10 +52,29 @@ object Exercices extends App {
       case Cons(h, t) => Cons(newHead, t)
     }
 
+    def drop[A](l: List[A], n: Int): List[A] = {
+      if (n <= 0) {
+        l
+      }else l match {
+        case Cons(_, t) => drop(t, n - 1)
+      }
+
+    }
+
+
+    def dropWhile[A](l: List[A], p: A => Boolean): List[A] = l match {
+      case Nil => Nil
+      case Cons(h, t) if (p(h)) => dropWhile(t, p)
+      case _ => l
+    }
+
   }
 
   println(x)
-  println(List.apply(1, 2, 3))
+  val l =  List.apply(1, 2, 3, 4, 5, 6)
+
+  println(List.drop(l, 3))
+  println(List.dropWhile(l, (a: Int) => a <= 3))
 
 
 }
