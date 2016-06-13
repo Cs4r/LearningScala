@@ -7,6 +7,15 @@ import scala.annotation.tailrec
 
 object Exercices extends App {
 
+  val x = List(1, 2, 3, 4, 5) match {
+    case Cons(x, Cons(2, Cons(4, _))) => x
+    case Nil => 42
+    case Cons(x, Cons(y, Cons(3, Cons(4, _)))) => x + y
+    case Cons(h, t) => h + List.sum(t)
+    case _ => 101
+  }
+  val l = List.apply(1, 2, 3, 4, 5, 6)
+
   sealed trait List[+A]
 
   // A `List` data constructor representing the empty list
@@ -18,8 +27,6 @@ object Exercices extends App {
 
   // `List` data type, parameterized on a type, `A`
   case object Nil extends List[Nothing]
-
-
   object List {
     // `List` companion object. Contains functions for creating and working with lists.
     def sum(ints: List[Int]): Int = ints match {
@@ -131,17 +138,43 @@ object Exercices extends App {
     def toString(l: List[Int]): List[String] = {
       foldRight(l, List[String]())((c, acc) => Cons(c.toString, acc))
     }
-  }
 
 
-  val x = List(1, 2, 3, 4, 5) match {
-    case Cons(x, Cons(2, Cons(4, _))) => x
-    case Nil => 42
-    case Cons(x, Cons(y, Cons(3, Cons(4, _)))) => x + y
-    case Cons(h, t) => h + List.sum(t)
-    case _ => 101
+    def map[A, B](as: List[A])(f: A => B): List[B] = as match {
+      case Nil => Nil
+      case Cons(h, t) => Cons(f(h), map(t)(f))
+    }
+
+
+    def filter[A](as: List[A])(f: A => Boolean): List[A] = as match {
+      case Nil => Nil
+      case Cons(h, tail) if f(h) => Cons(h, filter(tail)(f))
+      case Cons(_, tail) => filter(tail)(f)
+    }
+
+    def flatMap[A, B](as: List[A])(f: A => List[B]): List[B] = as match {
+      case Nil => Nil
+      case Cons(h, tail) => append(f(h), flatMap(tail)(f))
+    }
+
+    def filterByFlatMap[A](as: List[A])(f: A => Boolean): List[A] = {
+      flatMap(as)(x => if (f(x)) List(x) else List())
+    }
+
+    def addList(a: List[Int], b: List[Int]): List[Int] = (a, b) match {
+      case (_, Nil) => List()
+      case (Nil, _) => List()
+      case (Cons(h1, tail1), Cons(h2, tail2)) => Cons(h1 + h2, addList(tail1, tail2))
+    }
+
+
+    def zipWith[A,B,C](a: List[A], b: List[B])(f: (A,B) =>  C): List[C] = (a, b) match {
+      case (_, Nil) => List()
+      case (Nil, _) => List()
+      case (Cons(h1, tail1), Cons(h2, tail2)) => Cons(f(h1,h2), zipWith(tail1, tail2)(f))
+    }
+
   }
-  val l = List.apply(1, 2, 3, 4, 5, 6)
 
   println(x)
 
@@ -181,5 +214,20 @@ object Exercices extends App {
 
   println("toString")
   println(List.toString(l))
+
+  println("map")
+  println(List.map(l)(_ * 2))
+
+  println("filter")
+  println(List.filter(l)(_ % 2 == 0))
+
+
+  println("flatMap")
+  println(List.flatMap(l)(i => List(i, i)))
+
+
+  println("filterByFlatMap")
+  println(List.filterByFlatMap(l)(_ % 2 == 0))
+
 
 }
