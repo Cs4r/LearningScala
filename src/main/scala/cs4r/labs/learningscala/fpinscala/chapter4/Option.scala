@@ -4,7 +4,6 @@ package cs4r.labs.learningscala.fpinscala.chapter4
 import scala.{Either => _, Option => _, Some => _}
 
 
-
 sealed trait Option[+A] {
   def flatMap[B](f: A => Option[B]): Option[B] = this match {
     case None => None
@@ -37,15 +36,24 @@ case class Some[+A](get: A) extends Option[A]
 case object None extends Option[Nothing]
 
 
-  object Option {
+object Option {
 
-        def variance(xs: Seq[Double]):Option[Double] = {
-          ( mean(xs) flatMap (m => mean(xs.map(x => math.pow(x - m, 2)))) )
-        }
-
-
-        def mean(xs: Seq[Double]): Option[Double] =
-          if (xs.isEmpty) None
-          else Some(xs.sum / xs.length)
-
+  def variance(xs: Seq[Double]): Option[Double] = {
+    (mean(xs) flatMap (m => mean(xs.map(x => math.pow(x - m, 2)))))
   }
+
+
+  def mean(xs: Seq[Double]): Option[Double] =
+    if (xs.isEmpty) None
+    else Some(xs.sum / xs.length)
+
+
+  def map2[A, B, C](a: Option[A], b: Option[B])(f: (A, B) => C): Option[C] = {
+    a flatMap (a1 => b map (b1 => f(a1, b1)))
+  }
+
+  def sequence[A](a: List[Option[A]]): Option[List[A]] = a match {
+    case head :: tail => head flatMap (hh => sequence(tail) map (tt => (hh :: tt)))
+  }
+
+}
