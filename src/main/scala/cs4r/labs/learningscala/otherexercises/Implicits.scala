@@ -10,9 +10,16 @@ object ImplicitConversions extends App {
   println("Juan".sayHello)
 }
 
-/**
-  * Created by cs4r on 28/01/17.
-  */
+
+case class Complex(re: Double, im: Double) {
+  def +(that: Complex): Complex = Complex(re + that.re, im + that.im)
+
+  def -(that: Complex): Complex = Complex(this.re - that.re, this.im - that.im)
+
+  override def toString = s"$re + ${im}i"
+}
+
+
 object Implicits extends App {
 
   case class Multiplier(value: Long) extends AnyVal
@@ -32,6 +39,19 @@ object Implicits extends App {
 
   println(cube)
 
+
+  implicit class IntToEuros(val int: Int) extends AnyVal {
+    @inline def euros: String = int + "€"
+  }
+
+  println(s"I have ${5.euros}")
+
+  implicit class ComplexSquareRoot(val complex: Complex) {
+
+    @inline def abs: Double = math.sqrt(complex.re) + math.sqrt(complex.im)
+  }
+
+  println(Complex(4,4).abs)
 
 }
 
